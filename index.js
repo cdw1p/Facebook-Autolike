@@ -1,8 +1,10 @@
 const fetch = require('node-fetch')
+const moment = require('moment')
 require('colors')
 
 // Global Variable
-let ACCESS_TOKEN = 'EAAAAZAw4FxQIBAN5wVxjs9ciqZAs5wXVQiTOgHgLoz5vGWNZBzGRZCKfl7cGVHcxg7z0UlDPtJPHjRUkPHw2JNcvfMrllyvJ2BX4elCsX7I3Imm6xUPUMNntLeS3Yn3ZBKgoIK1bP6FKQAJh9QKSkCurmzvBJhzypIdLgvzoEUwZDZD'
+let ACCESS_TOKEN = 'EAAAAZAw4FxQIBAOjrZBPlDSYZA7IcjwOczkfckgy2CoobtdDvcpKcnAPr8hcwtCeWjzEnZB4Hszhyws4iYy9FHv7QEpq3HGncFiBAIF39hXS5VgnzJ5dfPYbKJSiFPoHwCHOa2QGOgnkc6ktr5pYF67xmzbGMgdcRZBLDZBn3QqAZDZD'
+// console.log(`[${moment().format('HH:MM:SS')}] `)
 
 const getFriendList = () => new Promise((resolve, reject) => {
   try {
@@ -20,13 +22,46 @@ const getFriendList = () => new Promise((resolve, reject) => {
   }
 })
 
+const getFriendPost = (USER_ID) => new Promise((resolve, reject) => {
+  try {
+    fetch(`https://graph.facebook.com/v6.0/${USER_ID}/feed?fields=id,permalink_url&limit=1&access_token=${ACCESS_TOKEN}`)
+    .then(res => res.json())
+    .then(result => {
+      if (result.error) {
+        resolve({ status: false, message: result.error.message })
+      } else {
+        resolve({ status: true, message: result.data[0] })
+      }
+    })
+  } catch(e) {
+    reject(e)
+  }
+})
+
+const startAutolike = (listFriend) => new Promise((resolve, reject) => {
+  try {
+    listFriend.forEach((data, i) => {
+      setTimeout(async () => {
+        let getPostId = await getFriendPost(data.id)
+
+        if (getPostId.status) {
+          console.log(getPostId.message)
+        } else {
+          console.log(`[ERR] Message : ${getPostId.message}`.red)
+        }
+      }, i*10000)
+    })
+  } catch(e) {
+    reject(e)
+  }
+})
 
 ;(async () => {
   try { 
     let resGFL = await getFriendList()
 
     if (resGFL.status) {
-      console.log(resGFL.message)
+      await startAutolike(resGFL.message)
     } else {
       console.log(`[ERR] Message : ${resGFL.message}`.red)
     }
