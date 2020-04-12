@@ -3,9 +3,10 @@ const moment = require('moment')
 require('colors')
 
 // Global Variable
-let ACCESS_TOKEN = 'EAAMn9cDHnDYBAL13NlZCOBMJZB6tqA4TM4ybnNwBmdhew9yvSQxh1RZAjv5qjGEXoXLZApqPWkxcDZAZAnlNP3i57yetRUc3ZAPQyubdXPaaj7dnmClKhaWV7a0oqh5mjZCPeLbP6OPWJ1FWlfeNFlZBbu9X9iQGEkVKGu1oSVQKfvZC45Fq5S5ZCs6HJjjAS1HkKsZD'
-let APP_ID = '888361384909878'
-let APP_SECRET = '23dfa9ee99604dfc02592ec1fcc6c0f6'
+let ACCESS_TOKEN = 'EAAAAZAw4FxQIBAPuZBVhuTnkRj46ZBwW8zOlVzz8KCbd2r63H7ET8SjDaE5AkneSgF5FrHVn9hZCTt19IZBT8HBslvD1sIpvSbnOENKDjXtGSr7uJ3TH0I0h3wTb4UZAZAH6iSmtTRnLjEAHv8EZAD4tzpgX2X4rFnWvgVrkPeAF9gZDZD'
+let APP_ID = ''
+let APP_SECRET = ''
+let SELF_APP = false
 
 const getLifetimeToken = () => new Promise((resolve, reject) => {
   try {
@@ -88,19 +89,26 @@ const startAutolike = (listFriend) => new Promise((resolve, reject) => {
 
 ;(async () => {
   try { 
-    let makeLifetimeToken = await getLifetimeToken()
-    if (makeLifetimeToken.status) {
-      // Set lifetime access token
-      ACCESS_TOKEN = makeLifetimeToken.message
-
+    if (SELF_APP) {
+      let makeLifetimeToken = await getLifetimeToken()
+      if (makeLifetimeToken.status) {
+        ACCESS_TOKEN = makeLifetimeToken.message
+        let resGFL = await getFriendList()
+        if (resGFL.status) {
+          await startAutolike(resGFL.message)
+        } else {
+          console.log(`[ERR] Message : ${resGFL.message}`.red)
+        }
+      } else {
+        console.log(`[ERR] Message : ${makeLifetimeToken.message}`.red)
+      }
+    } else {
       let resGFL = await getFriendList()
       if (resGFL.status) {
         await startAutolike(resGFL.message)
       } else {
         console.log(`[ERR] Message : ${resGFL.message}`.red)
       }
-    } else {
-      console.log(`[ERR] Message : ${resGFL.message}`.red)
     }
   } catch(e) {
     console.log(e)
