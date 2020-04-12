@@ -1,0 +1,27 @@
+{
+  "name": "facebook-autolike",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "delay": "^4.3.0",
+    "fs": "^0.0.1-security",
+    "moment": "^2.24.0",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cdw1p/Facebook-Autolike.git"
+  },
+  "author": "cdw1",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cdw1p/Facebook-Autolike/issues"
+  },
+  "homepage": "https://github.com/cdw1p/Facebook-Autolike#readme"
+}
