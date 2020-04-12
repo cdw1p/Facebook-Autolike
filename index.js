@@ -4,7 +4,6 @@ require('colors')
 
 // Global Variable
 let ACCESS_TOKEN = 'EAAAAZAw4FxQIBAOjrZBPlDSYZA7IcjwOczkfckgy2CoobtdDvcpKcnAPr8hcwtCeWjzEnZB4Hszhyws4iYy9FHv7QEpq3HGncFiBAIF39hXS5VgnzJ5dfPYbKJSiFPoHwCHOa2QGOgnkc6ktr5pYF67xmzbGMgdcRZBLDZBn3QqAZDZD'
-// console.log(`[${moment().format('HH:MM:SS')}] `)
 
 const getFriendList = () => new Promise((resolve, reject) => {
   try {
@@ -38,14 +37,27 @@ const getFriendPost = (USER_ID) => new Promise((resolve, reject) => {
   }
 })
 
+const postLikeStatus = (POST_ID) => new Promise((resolve, reject) => {
+  try {
+    fetch(`https://graph.facebook.com/${POST_ID}/likes?method=POST&access_token=${ACCESS_TOKEN}`)
+    .then(res => res.text())
+    .then(result => resolve(result))
+  } catch(e) {
+    reject(e)
+  }
+})
+
 const startAutolike = (listFriend) => new Promise((resolve, reject) => {
   try {
     listFriend.forEach((data, i) => {
       setTimeout(async () => {
         let getPostId = await getFriendPost(data.id)
-
         if (getPostId.status) {
-          console.log(getPostId.message)
+          if (await postLikeStatus(getPostId.message.id)) {
+            console.log(`[${moment().format('HH:MM:SS')}] Liked ${data.name} 's most recent post`.green)
+          } else {
+            console.log(`[${moment().format('HH:MM:SS')}] Failed like post ${data.name}`.red)
+          }
         } else {
           console.log(`[ERR] Message : ${getPostId.message}`.red)
         }
