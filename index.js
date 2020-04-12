@@ -3,7 +3,25 @@ const moment = require('moment')
 require('colors')
 
 // Global Variable
-let ACCESS_TOKEN = 'EAAAAZAw4FxQIBAOjrZBPlDSYZA7IcjwOczkfckgy2CoobtdDvcpKcnAPr8hcwtCeWjzEnZB4Hszhyws4iYy9FHv7QEpq3HGncFiBAIF39hXS5VgnzJ5dfPYbKJSiFPoHwCHOa2QGOgnkc6ktr5pYF67xmzbGMgdcRZBLDZBn3QqAZDZD'
+let ACCESS_TOKEN = 'EAAMn9cDHnDYBAL13NlZCOBMJZB6tqA4TM4ybnNwBmdhew9yvSQxh1RZAjv5qjGEXoXLZApqPWkxcDZAZAnlNP3i57yetRUc3ZAPQyubdXPaaj7dnmClKhaWV7a0oqh5mjZCPeLbP6OPWJ1FWlfeNFlZBbu9X9iQGEkVKGu1oSVQKfvZC45Fq5S5ZCs6HJjjAS1HkKsZD'
+let APP_ID = '888361384909878'
+let APP_SECRET = '23dfa9ee99604dfc02592ec1fcc6c0f6'
+
+const getLifetimeToken = () => new Promise((resolve, reject) => {
+  try {
+    fetch(`https://graph.facebook.com/v6.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${APP_ID}&client_secret=${APP_SECRET}&fb_exchange_token=${ACCESS_TOKEN}`)
+    .then(res => res.json())
+    .then(result => {
+      if (result.error) {
+        resolve({ status: false, message: result.error.message })
+      } else {
+        resolve({ status: true, message: result.access_token })
+      }
+    })
+  } catch(e) {
+    reject(e)
+  }
+})
 
 const getFriendList = () => new Promise((resolve, reject) => {
   try {
@@ -70,10 +88,17 @@ const startAutolike = (listFriend) => new Promise((resolve, reject) => {
 
 ;(async () => {
   try { 
-    let resGFL = await getFriendList()
+    let makeLifetimeToken = await getLifetimeToken()
+    if (makeLifetimeToken.status) {
+      // Set lifetime access token
+      ACCESS_TOKEN = makeLifetimeToken.message
 
-    if (resGFL.status) {
-      await startAutolike(resGFL.message)
+      let resGFL = await getFriendList()
+      if (resGFL.status) {
+        await startAutolike(resGFL.message)
+      } else {
+        console.log(`[ERR] Message : ${resGFL.message}`.red)
+      }
     } else {
       console.log(`[ERR] Message : ${resGFL.message}`.red)
     }
