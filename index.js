@@ -1,9 +1,10 @@
 const fetch = require('node-fetch')
 const moment = require('moment')
+const readline = require('readline-sync')
 require('colors')
 
 // Global Variable
-let ACCESS_TOKEN = 'EAAAAZAw4FxQIBAPuZBVhuTnkRj46ZBwW8zOlVzz8KCbd2r63H7ET8SjDaE5AkneSgF5FrHVn9hZCTt19IZBT8HBslvD1sIpvSbnOENKDjXtGSr7uJ3TH0I0h3wTb4UZAZAH6iSmtTRnLjEAHv8EZAD4tzpgX2X4rFnWvgVrkPeAF9gZDZD'
+let ACCESS_TOKEN = ''
 let APP_ID = ''
 let APP_SECRET = ''
 let SELF_APP = false
@@ -58,7 +59,7 @@ const getFriendPost = (USER_ID) => new Promise((resolve, reject) => {
 
 const postLikeStatus = (POST_ID) => new Promise((resolve, reject) => {
   try {
-    fetch(`https://graph.facebook.com/${POST_ID}/likes?method=POST&access_token=${ACCESS_TOKEN}`)
+    fetch(`https://graph.facebook.com/${POST_ID}/reactions?method=POST&access_token=${ACCESS_TOKEN}`)
     .then(res => res.text())
     .then(result => resolve(result))
   } catch(e) {
@@ -89,6 +90,7 @@ const startAutolike = (listFriend) => new Promise((resolve, reject) => {
 
 ;(async () => {
   try { 
+    ACCESS_TOKEN = readline.question('[?] Access Token : ')
     if (SELF_APP) {
       let makeLifetimeToken = await getLifetimeToken()
       if (makeLifetimeToken.status) {
